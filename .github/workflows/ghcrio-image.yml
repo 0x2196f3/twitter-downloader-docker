@@ -37,42 +37,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push linux/amd64 image as latest
-        id: push-amd64
-        uses: docker/build-push-action@v4
+      - 
+        name: Build and push
+        uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64
+          file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          labels: ${{ steps.meta.outputs.labels }}
-    
-      - name: Build and push linux/arm64 image as arm64
-        id: push-arm64
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/arm64
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Generate artifact attestation for amd64
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.push-amd64.outputs.digest }}
-          push-to-registry: true
-    
-      - name: Generate artifact attestation for arm64
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
-          subject-digest: ${{ steps.push-arm64.outputs.digest }}
-          push-to-registry: true
+          platforms: linux/amd64, linux/arm64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:arm64
