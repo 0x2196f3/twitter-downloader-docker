@@ -5,6 +5,10 @@ download users all images and videos by twitter-id every 6 hours in a docker con
 
 #### based on [twitter_download](https://github.com/caolvchong-top/twitter_download)
 
+## Supported Architectures  
+- linux/amd64  
+- linux/arm64    
+
 ## Environment Variables
 | Environment Variable | Usage |
 | --- | --- |
@@ -15,6 +19,7 @@ download users all images and videos by twitter-id every 6 hours in a docker con
 | --- |---------------------------------------------------------------------------|
 | `/download` | tweets will be downloaded here, organized by username                     |
 | `/config/settings.json` | the settings.json file of [twitter_download](https://github.com/caolvchong-top/twitter_download) |
+
 
 ## Usage
 ```bash
