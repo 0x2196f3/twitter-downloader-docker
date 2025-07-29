@@ -4,6 +4,7 @@ import subprocess
 import sys
 import shutil
 import time
+import json
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -11,24 +12,38 @@ scheduler = BlockingScheduler()
 
 bin_path = "/app/twitter_download"
 config_path = "/config"
-save_path = "/downloads"
+save_path = "/download"
 
 DEFAULT_INTERVAL = 60 * 60 * 24
 DEFAULT_RETRY_TIMES = 1
 
 retry_times = None
 interval = None
-delete_csv = None
+delete_csv = False
 
 def update_all():
-    os.chdir(bin_path)
-
     config_file = os.path.join(config_path, "settings.json")
     dest_file =  os.path.join(bin_path, "settings.json")
 
     if os.path.exists(config_file):
         shutil.copy(config_file, dest_file)
         print(f"Copied {config_file} to {dest_file}")
+        try:
+            with open(dest_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (IOError, json.JSONDecodeError) as e:
+            print(f"Error reading JSON from {dest_file}: {e}")
+            return -1
+        data["save_path"] = save_path
+        
+        try:
+            with open(dest_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+        except IOError as e:
+            print(f"Error writing JSON to {dest_file}: {e}")
+            return -1
+
+        print(f"Updated 'save_path' in {dest_file} to '{save_path}'")
     else:
         print(f"Config file {config_file} not found")
         return -1
@@ -47,6 +62,7 @@ def update_all():
     print(f"return {return_code}")
     
     if return_code == 0 and delete_csv:
+        print("start deleting csv")
         for dirpath, dirnames, filenames in os.walk(save_path):
             for name in filenames:
                 if name.lower().endswith(".csv"):
