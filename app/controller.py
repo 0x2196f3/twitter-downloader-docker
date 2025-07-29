@@ -33,21 +33,17 @@ def update_all():
         print(f"Config file {config_file} not found")
         return -1
 
-    command = ["python3", "./main.py"]
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=bin_path)
-    while True:
-        line = process.stdout.readline()
-        if not line:
-            break
-        try:
-            sys.stdout.write(line.decode())
-            sys.stdout.flush()
-        except:
-            pass
-
-    return_code = process.wait()
-
+    process = subprocess.Popen(
+        ["python3", "./main.py"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=bin_path
+    )
+    out, _ = process.communicate()
+    print(out.decode(), end="")
+    
+    return_code = process.returncode
+    
     print(f"return {return_code}")
     
     if return_code == 0 and delete_csv:
