@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.12-slim
 
 ADD ./app /app
 RUN pip install -r /app/requirements.txt && pip install -r /app/twitter_download/requirements.txt
