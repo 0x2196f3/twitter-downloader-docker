@@ -32,7 +32,7 @@ def task(total_attempts: int = DEFAULT_RETRY_TIMES, delete_csv: bool = False):
     
     for attempt in range(total_attempts):
         try:
-            subprocess.run(["python3", "main.py"], cwd=BIN_PATH, check=True, timeout=60 * 60 * 2)
+            subprocess.run(["python3", "-u", "main.py"], cwd=BIN_PATH, check=True, timeout=60 * 60 * 2)
             print(f"twitter_download attempt {attempt + 1} succeeded")
             break
         except Exception as e:
